@@ -1,4 +1,5 @@
 ipykernel
+dotmap
 numpy
 opencv-python
 scipy

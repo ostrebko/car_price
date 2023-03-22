@@ -1,0 +1,168 @@
+{
+  "//" :  "---------------------------------",
+  "//" : "PATHS & seed settings",
+
+  "//" :  "directory for general data path",
+  "PATH_DATA" : "data",
+
+  "//" :  "directory for images",
+  "folder_imgs" : "img",
+
+  "//" :  "directory for outputs from train",
+  "folder_outputs" : "outputs_from_train",
+
+  "//" :  "directory for save and load model when model is training",
+  "folder_best_model" : "best_models",
+
+  "//" :  "directory for trained model",
+  "folder_models" : "models",
+
+  "//" :  "directory for random inference",
+  "test_imgs_for_pred" : "test_imgs_for_pred",
+  
+  "//" :  "zip file_name",
+  "ZIP_FILE" : "sf-dst-car-price-prediction-part2.zip",
+
+  "//" :  "choose SEED value",
+  "RANDOM_SEED" : 32,
+
+
+
+
+
+
+  "//" : "Class names",
+  "class_names": [
+    "lada_priora",
+    "ford_focus",
+    "lada_2114",
+    "lada_2110",
+    "lada_2107",
+    "lada_niva",
+    "lada_kalina",
+    "lada_2109",
+    "volkswagen_passat",
+    "lada_21099"
+  ],
+  
+
+  "//" : "number of epochs for learning",
+  "EPOCHS" : 5, 
+  
+  "//" : "reduce the batch if the network is large",
+  "//" : "otherwise it will not fit into the memory on the GPU",
+  "BATCH_SIZE" : 64, 
+
+  "//" : "zero learning rate, non-change param",
+  "LR0" : 1e-4,
+
+  "//" : "learning rate, will change in training model",
+  "LR" : 1e-4,
+  
+  "//" :  "the proportion of data allocated to the test = 20%",
+  "VAL_SPLIT" : 0.2,
+
+  "//" :  "the number of classes in task",
+  "CLASS_NUM" : 10,
+
+  "//" :  "size of pictures that we send in model",
+  "IMG_SIZE" : 224,
+
+  "//" :  "RGB has 3 channel",
+  "IMG_CHANNELS" : 3,
+
+
+
+  
+
+
+
+  "//" :  "---------------------------------",
+  "//" :  "Settings for callbacks functions",
+
+  "//" :  "ModelCheckpoint",
+  "monitor_m_checkpnt" : "val_accuracy",
+  "verbose_m_checkpnt" : 1,
+  "mode_m_checkpnt" : "max",
+  "save_best_only" : true,
+  "best_model_name" : "best_model.hdf5",
+
+  "//" :  "EarlyStopping",
+  "monitor_early_stop" : "val_accuracy",
+  "patience_early_stop" : 6,
+  "restore_best_weights" : true,
+
+  "//" :  "ReduceLROnPlateau",
+  "monitor_reduce_plteau" : "val_accuracy",
+  "factor_reduce_plteau" : 0.2,
+  "patience_reduce_plteau" : 3,
+  "verbose_reduce_plteau" : 1,
+  "min_lr_ratio" : 100,
+  
+
+
+  "//" :  "---------------------------------",
+  "//" :  "Settings for creating model",
+  
+  "//" :  "weights of basic models",
+  "weights" : "imagenet",
+  
+  "//" :  "add or exclude 'Head' ",
+  "include_top" : false,
+
+  "//" :  "param to set to train all layers",
+  "trainable" : true,
+
+
+
+  "//" :  "---------------------------------",
+  "//" :  "Settings for new head of base model",
+
+  "//" :  "dimensionality of the output space in Dense layer",
+  "dense_units" : 256,
+  
+  "//" :  "function activation in Dense layer",
+  "dense_activation" : "relu",
+
+  "//" :  "Dropout ratio",
+  "dropout_ratio" : 0.25,
+
+  "//" :  "function activation in output layer (logistic layer)",
+  "output_activation" : "softmax",
+
+  "//" :  "model name",
+  "model_name" : "Custom model",
+
+  "//" :  "show or hide summary and trainings layers",
+  "is_show_summary" : false,
+  "is_show_train_layers" : true,
+  
+  "//" :  "fine tinnig coef for unfreeze layers",
+  "f_tune_coef" : 1,
+
+  "//" :  "param to train all layers if True",
+  "train_all_base_layers" : false,
+  
+
+  "//" :  "---------------------------------",
+  "//" :  "Settings for compile model",
+  "loss_compile" : "categorical_crossentropy",
+  "metric_compile" : "accuracy",
+
+
+
+  "//" :  "---------------------------------",
+  "//" :  "Settings for TTA",
+  "steps_for_tta" : 10,
+  
+
+
+  "//" :  "---------------------------------",
+  "//" :  "Prediction params",
+  "continue_predict" : true,
+  "demo" : {"1": true, "0": false},
+  
+
+
+  "//" :  "that's all"
+}
