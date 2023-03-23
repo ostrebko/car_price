@@ -2,6 +2,13 @@ import os
 import re
 import numpy as np
 import zipfile
+import matplotlib.pyplot as plt
+from IPython.display import display
+
+# increasing of default size of graphs
+from pylab import rcParams
+rcParams['figure.figsize'] = 8, 4
+
 
 
 def mape_func(y_true, y_pred):
@@ -49,6 +56,7 @@ def make_unzip(path_to_zip_file, path_to_unzip, is_unzip=False):
         print('Zip-archive "sf-dst-car-price-prediction-part2.zip" no need to unpack,',
               'to unpack change value of param "is_unzip" to "True"')
 
+
  
 def get_translite(text_string):
     
@@ -73,6 +81,7 @@ def get_translite(text_string):
     my_simb_table = text_string.maketrans(coding_dict)
     
     return text_string.translate(my_simb_table).lower() 
+
 
 
 def pre_an_types_feat(df_name):
@@ -151,7 +160,7 @@ def prepare_vladenie(string_name, col='Владение', pattern_1 = '\d+'):
     return num_mounth
 
 
-# анализ, где мы можем ошибиться на тестовых данных при обучении
+
 def col_preanalisys(df_train, df_test, col, is_print_unique=False):
     
     """
@@ -183,3 +192,92 @@ def col_preanalisys(df_train, df_test, col, is_print_unique=False):
             print(f'{col} values in test that are not present in train: {unq_dlt_tst_col}')
 
         print('--'*20)
+
+
+
+def ch_name_col(df_name_item):
+    
+    """
+    Function to exclude duplicated data from 1 row of col 'name'
+    Uses with fuction: some_df.df_name_item.apply(ch_name_col)
+    return: changed column name
+    -------
+    params:
+    df_name_item - item from 1 row of col 'name'
+    
+    """
+    if '4WD' in df_name_item:
+        full_drive = ' 4WD'
+    else:
+        full_drive = ''
+    pattern_1 = ' \d\.\d'
+    pattern_2 = '\d\.\d'
+    pattern_3 = ' AT'
+    if len(re.findall(pattern_1, df_name_item))!=0:
+        return re.split(pattern_1, df_name_item)[0] + full_drive
+    elif len(re.findall(pattern_2, df_name_item))!=0:
+        return 'no_val' + full_drive
+    else:
+        return re.split(pattern_3, df_name_item)[0] + full_drive
+
+
+
+def ch_engineDisplacement(d_frame_engine_d):
+    """
+    Function to bring 1 item of the engineDisplacement col to float value
+    Uses with fuction: some_df.d_frame_engine_d.apply(ch_name_col)
+    return: None
+    -------
+    params:
+    df_name_item - item from 1 row of col 'engineDisplacement'
+    
+    """
+    return float(d_frame_engine_d[:-4])
+
+
+
+def numb_type_analisys(df, col_name, bins_step=1):
+
+    """
+    Function to print statistical analisys of numerical features
+    Describe statistical information about data of col_name
+        and plot histogram
+
+    return: float value
+    -------
+    params:
+    df - DataFrame (df_train or df_test)
+    col_name - name of numerical feature from df
+    bins_step - bins step in histogram
+
+    """
+
+    print('\n', '\033[1m' + 'Column: ' + col_name, '\033[0m', '\n')
+
+    IQR = df[col_name].quantile(0.75) - df[col_name].quantile(0.25)
+    perc25 = df[col_name].quantile(0.25)
+    perc75 = df[col_name].quantile(0.75)
+    out_left = perc25 - 1.5*IQR
+    out_right = perc75 + 1.5*IQR
+
+    print('Statistical parameters of the column {}:'.format(col_name))
+    print(
+        '25-й percentile: {},'.format(perc25),
+        '75-й percentile: {},'.format(perc75),
+        "IQR: {}, ".format(IQR),
+        "Boundaries outliers: [{f}, {l}].".format(f=out_left, l=out_right),
+        '\n')
+
+    if out_left > min(df[col_name]):
+        print('There are outliers in the region of minimum values')
+    if out_right < max(df[col_name]):
+        print('There are outliers in the region of maximum values')
+    if (out_left < min(df[col_name])) and (out_right > max(df[col_name])):
+        print('There are no outliers')
+
+    display(df[col_name].describe())
+
+    df[col_name].hist(bins=np.arange(min(df[col_name]), max(df[col_name]) + 1, bins_step),
+                      align='left',
+                      label=col_name)
+    plt.legend()
