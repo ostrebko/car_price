@@ -4,6 +4,10 @@ import numpy as np
 import zipfile
 import matplotlib.pyplot as plt
 from IPython.display import display
+import seaborn as sns
+
+from itertools import combinations
+from scipy.stats import ttest_ind
 
 # increasing of default size of graphs
 from pylab import rcParams
@@ -180,16 +184,16 @@ def col_preanalisys(df_train, df_test, col, is_print_unique=False):
     unq_dlt_tst_col = unq_in_tst_col - unq_in_trn_col
 
     if (len(unq_in_trn_col)>=len(unq_in_tst_col))and(len(unq_dlt_tst_col)!=0):
-        print(f'The number of unique values in the {col} column in df_train is greater or equal than in df_test.\n', 
-              f'The number of {col} values in test that are not present in train: {len(unq_dlt_tst_col)}')
+        print(f'The numb of unique vals in the {col} col in df_train >= than in df_test.\n', 
+              f'The numb of {col} vals in df_test that are not present in train: {len(unq_dlt_tst_col)}')
         if is_print_unique:
-            print(f'{col} values in test that are not present in train: {unq_dlt_tst_col}')
+            print(f'{col} vals in df_test that are not present in df_train: {unq_dlt_tst_col}')
         print('--'*20)
     elif (len(unq_in_trn_col)<len(unq_in_tst_col))and(len(unq_dlt_tst_col)!=0):
-        print(f'The number of unique values in the {col} column in df_test is greater or equal than in df_train.\n',
-              f'The number of {col} values in test that are not present in train: {len(unq_dlt_tst_col)}')
+        print(f'The numb of unique vals in the {col} col in df_test >= than in df_train.\n',
+              f'The numb of {col} vals in df_test that are not present in df_train: {len(unq_dlt_tst_col)}')
         if is_print_unique:
-            print(f'{col} values in test that are not present in train: {unq_dlt_tst_col}')
+            print(f'{col} vals in test that are not present in df_train: {unq_dlt_tst_col}')
 
         print('--'*20)
 
@@ -226,7 +230,7 @@ def ch_engineDisplacement(d_frame_engine_d):
     """
     Function to bring 1 item of the engineDisplacement col to float value
     Uses with fuction: some_df.d_frame_engine_d.apply(ch_name_col)
-    return: None
+    return: float of engineDisplacement
     -------
     params:
     df_name_item - item from 1 row of col 'engineDisplacement'
@@ -281,3 +285,144 @@ def numb_type_analisys(df, col_name, bins_step=1):
                       align='left',
                       label=col_name)
     plt.legend()
+
+
+
+def define_axes(df, col_name, ind, axes):
+    
+    """
+    Function for define 2 axes for plot 2 histograms: col and log(col)
+    
+    return: None
+    -------
+    params:
+    df - DataFrame (df_train or df_test)
+    col_name - name of numerical feature from df
+    ind - index for plotting histograms in subplots
+
+    """
+    
+    axes[ind].hist(df[col_name], 
+                   bins = 25,
+                   align='left')
+    axes[ind].set_title(col_name)
+    
+    axes[ind+1].hist(np.log(1 + df[col_name]),
+                          bins = 25,
+                          align='left')
+    axes[ind+1].set_title('log ' + col_name)
+
+
+  
+def plot_col(numb_cols, df):
+    
+    """
+    Function for plot histograms for num cols
+    For each num column creates 2 histograms: hist(col) and hist(log(col))
+    
+    return: None
+    -------
+    params:
+    numb_cols - list of numerical columns of df
+    df - DataFrame (df_train or df_test)
+
+    """
+        
+    ind_j = 0
+
+    fig, axes = plt.subplots(1, 4, figsize=(12, 2))
+    
+    for col in numb_cols:
+        if ind_j < 3:
+            define_axes(df, col, ind_j, axes)
+            ind_j += 2
+        else:
+            plt.show()
+            ind_j = 0
+            fig, axes = plt.subplots(1, 4, figsize=(12, 2))
+            define_axes(df, col, ind_j, axes)
+            ind_j += 2
+
+
+def ch_first_simb(text, simb_to_replace=[' ', '-'], replaced_simbol='\n'):
+    
+    """
+    Function for spliting long text of features values for 2 rows 
+        (repace first ' ' or '-' to '\n'). If feature val don't include
+        symbols ' ' or '-' function returns original text
+        
+    return: splitted for 2 row text
+    -------
+    params: 
+    text - feature value 
+
+    """
+    
+    try:
+        simb_ind = text.index(simb_to_replace[0])
+        return text[:simb_ind] + replaced_simbol +  text[simb_ind + 1:]
+    except ValueError:
+        try:
+            simb_ind = text.index(simb_to_replace[1])
+            return text[:simb_ind] + replaced_simbol +  text[simb_ind + 1:]
+        except ValueError:
+            return text
+
+
+def get_boxplot(col_name, df):
+    
+    """
+    Function for plot boxplots with seaborn for 1 feature column and target
+        
+    return: None
+    -------
+    params:
+    col_name - name of nominative feature from df 
+    df - DataFrame (df_train or df_test)
+
+    """
+    
+    label_names = list(df[col_name].unique())
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    
+    sns.boxplot(x=col_name, y='price',
+                data=df,  # данных в столбцах не много
+                orient='v',
+                ax=ax)
+
+    plt.xticks(rotation=90)
+    ax.set_xticklabels([ch_first_simb(label) for label in label_names])
+    ax.set_title('Boxplot for ' + col_name)
+    plt.show()
+
+
+def get_stat_dif(col, alpha, df):
+    
+    """
+    Function for ...
+        
+    return: None
+    -------
+    params:
+    col - name of nominative feature from df 
+    alpha - significance level
+    df - DataFrame (df_train or df_test)
+
+    """
+
+    cols = df.loc[:, col].value_counts().index[:]
+    combinations_all = list(combinations(cols, 2))
+    for comb in combinations_all:
+        if ttest_ind(df.loc[df.loc[:, col] == comb[0], 'price'],
+                     df.loc[df.loc[:, col] == comb[1], 'price']).pvalue \
+                     <= alpha/len(combinations_all):  # taken into account the Bonferroni amendment
+            print(
+                'Statistically significant differences were found for the column {} with significance level {}'.format(
+                    col, alpha))
+            break
+        else:
+            print(
+                'NO statistically significant differences were found for the column {} with significance level {}'.format(
+                    col, alpha))
+            break
