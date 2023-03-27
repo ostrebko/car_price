@@ -15,21 +15,6 @@ rcParams['figure.figsize'] = 8, 4
 
 
 
-def mape_func(y_true, y_pred):
-    """
-    Function to calc MAPE-metric
-
-    return: calculated metric MAPE
-    -------
-    params:
-    
-    y_true - there are known values of target y
-    y_pred - predicted values of target y
-    """
-    return np.mean(np.abs((y_pred - y_true)/y_true))
-
-
-
 def make_unzip(path_to_zip_file, path_to_unzip, is_unzip=False):
        
     """
