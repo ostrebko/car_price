@@ -118,38 +118,6 @@ def prints_types_feat(feat_bin, feat_cat, feat_cat_large, feat_other):
 
 
 
-def prepare_vladenie(string_name, col='Владение', pattern_1 = '\d+'):
-    
-    """
-    Function to prepare feature 'Владение' to num type feature
-    if NaN -> value changes to 0
-    elif 'и' in string value (ex:'1 год и 1 мес)' -> 
-        -> value recalc int(month_num)+12*int(year_num)
-    elif 'мес' in string value (ex:'8 месяцев)' -> 
-        -> value recalc int(month_num)
-    esle ex:'1 год' -> value recalc 12*int(year_num)
-    
-    return: number of how many months of car ownership 
-    -------
-    params:
-    string_name - 1 value of feature 'Владение' in DataFrame
-    
-    """
-        
-    if type(string_name) == float:
-        # Если NaN меняем на 0
-        num_mounth = 0
-    elif len(string_name.split('и'))==2:
-        nums = re.findall(pattern_1, string_name)
-        num_mounth = int(nums[1]) + int(nums[0])*12
-    elif 'мес'in string_name:
-        num_mounth = int(re.findall(pattern_1, string_name)[0])
-    else: 
-        num_mounth = int(re.findall(pattern_1, string_name)[0])*12
-    return num_mounth
-
-
-
 def col_preanalisys(df_train, df_test, col, is_print_unique=False):
     
     """
@@ -181,33 +149,6 @@ def col_preanalisys(df_train, df_test, col, is_print_unique=False):
             print(f'{col} vals in test that are not present in df_train: {unq_dlt_tst_col}')
 
         print('--'*20)
-
-
-
-def ch_name_col(df_name_item):
-    
-    """
-    Function to exclude duplicated data from 1 row of col 'name'
-    Uses with fuction: some_df.df_name_item.apply(ch_name_col)
-    return: changed column name
-    -------
-    params:
-    df_name_item - item from 1 row of col 'name'
-    
-    """
-    if '4WD' in df_name_item:
-        full_drive = ' 4WD'
-    else:
-        full_drive = ''
-    pattern_1 = ' \d\.\d'
-    pattern_2 = '\d\.\d'
-    pattern_3 = ' AT'
-    if len(re.findall(pattern_1, df_name_item))!=0:
-        return re.split(pattern_1, df_name_item)[0] + full_drive
-    elif len(re.findall(pattern_2, df_name_item))!=0:
-        return 'no_val' + full_drive
-    else:
-        return re.split(pattern_3, df_name_item)[0] + full_drive
 
 
 
