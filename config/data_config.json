@@ -28,6 +28,55 @@
 
 
   "//" :  "---------------------------------",
+  "//" : "MorphAnalyzer parameters ",
+  
+  "//" : "maximum number of used words",
+  "MAX_WORDS" : 100000, 
+
+  "//" : "maximum number of words in each review",
+  "MAX_SEQUENCE_LENGTH" : 256, 
+
+
+  "//" :  "---------------------------------",
+  "//" : "Catboost parameters ",
+  
+  "//" : "...",
+  "cat_iterations" : 100000, 
+
+  "//" : "...",
+  "cat_depth" : 8, 
+
+  "//" : "...",
+  "cat_learning_rate" : 0.019, 
+
+  "//" : "...",
+  "cat_eval_metric" : "MAPE", 
+
+  "//" : "...",
+  "cat_custom_metric_1" : "RMSE",
+
+  "//" : "...",
+  "cat_custom_metric_2" : "MAE",
+
+  "//" : "...",
+  "cat_od_wait" : 500,
+
+  "//" : "...",
+  "cat_grow_policy" : "Lossguide",
+
+  "//" : "...",
+  "cat_l2_leaf_reg" : 3.7,
+
+  "//" : "...",
+  "cat_model_size_reg" : 2,
+
+  "//" : "...",
+  "cat_loss_function" : "MAE",
+
+  
+
+
+  "//" :  "---------------------------------",
   "//" : "Basic settings",
   
   "//" : "number of epochs for learning",
