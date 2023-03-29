@@ -48,7 +48,7 @@ def prepare_vladenie(string_name, col='Владение', pattern_1 = '\d+'):
     """
         
     if type(string_name) == float:
-        # Если NaN меняем на 0
+        # If NaN - convert to 0
         num_mounth = 0
     elif len(string_name.split('и'))==2:
         nums = re.findall(pattern_1, string_name)
@@ -92,12 +92,13 @@ def ch_name_col(df_name_item):
 def preproc_features(df_input):
     
     """
-    Function to ...
+    Function for preprocessing tabular data (DataFrame)
+    for following splitting to train model
    
-    return: ....
+    return: df_output - preprocessed tabular data
     -------
     params:
-    df_input - concatenated dataframe with train and test
+    df_input - concatenated df_train and df_test DataFrames
     
     """
     
@@ -177,13 +178,14 @@ def preproc_features(df_input):
 
 def concat_train_test(paths):
     """
-    Function to ...
+    Function to concatenate df_train and df_test for a single preprocessing.
+    df_train and df_test are read from csv files
    
-    return: ....
+    return: df_train and df_test concatenated DataFrame
     -------
     params:
-    ..... - ....
-    
+    paths - dict of paths which created from create_paths func
+
     """
     
     train = pd.read_csv(os.path.join(paths.PATH_DATA, 'train.csv'))
@@ -210,24 +212,21 @@ def concat_train_test(paths):
 def create_preproc_data(config, paths):
     
     """
-    Function to ...
+    Function to proove preprocessing data
    
-    return: ....
+    return: X_sub, X_train, X_test, y_train, y_test - splitted data for train model
     -------
     params:
-    ..... - ....
-    
+    config - dict (Dotmap) from configuration file with defined parameters values 
+             (creates from config_reader function by reading data_config.json)
+    paths - dict of paths which created from create_paths func
+
     """
 
     data = concat_train_test(paths)
     df_preproc = preproc_features(data)
     print('tabular preproc done')
     
-    
-    ## Cleaning data.decsription
-    #data.description = get_clean_description(data.description, config)
-    
-    # Преобразование табличных данных функцией df_preproc
     train_data = df_preproc.query('sample == 1').drop(['sample'], axis=1)
     test_data = df_preproc.query('sample == 0').drop(['sample'], axis=1)
 
@@ -238,14 +237,24 @@ def create_preproc_data(config, paths):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.13, shuffle=True, random_state=config.RANDOM_SEED)
     
-    list_inds = [X_train.index, X_test.index, X_sub.index]
-    
     print('data preproc finish')
     
-    return X_sub, X_train, X_test, y_train, y_test, list_inds # X, y, 
+    return X_sub, X_train, X_test, y_train, y_test # X, y, 
 
 
 def define_cat_boost(config):
+
+    """
+    Function for define CatBoostRegressor model (an object of the CatBoostRegressor class)
+   
+    return: model - CatBoostRegressor model for foolwing train
+    -------
+    params:
+    config - dict (Dotmap) from configuration file with defined parameters values 
+             (creates from config_reader function by reading data_config.json)
+
+    """
+
     model = CatBoostRegressor(iterations=config.cat_iterations,
                               depth=config.cat_depth, 
                               learning_rate=config.cat_learning_rate,
@@ -260,22 +269,18 @@ def define_cat_boost(config):
                               loss_function=config.cat_loss_function #'MAE'
                               )
     return model
-                                                
-
-
-
 
 
 
 def clean_stopwords(str_2_clean):
 
     """
-    Function to Функция для очистки данных от цифр, знаков, повторяющихся символов
+    Function for clearing input string from numbers, signs, repeated characters
    
-    return: ....
+    return: cleared input string
     -------
     params:
-    ..... - ....
+    str_2_clean - string to be creared from numbers, signs, repeated characters
     
     """
     
@@ -295,12 +300,15 @@ def clean_stopwords(str_2_clean):
 def filtetred_freq_words(max_freq_to_remove, min_freq_to_remove, dict_from_data):
     
     """
-    Function to ### делаем список для фильтра часто и редко встречающихся слов
+    Function makes the dictionary with words that occur too often and too rarely
    
-    return: ....
+    return: filtered_dict - dictionary with too often and too rarely words
     -------
     params:
-    ..... - ....
+    max_freq_to_remove - an integer specifying the number of rare words
+    min_freq_to_remove - an integer specifying the number of often words
+    dict_from_data - the dict of tokenize.word_index defines a number 
+        that determines how many times a word has occurred in the data 
     
     """
     
@@ -313,12 +321,16 @@ def filtetred_freq_words(max_freq_to_remove, min_freq_to_remove, dict_from_data)
 def get_clean_description(data_descr, config):
 
     """
-    Function to Функция для очистки данных от цифр, знаков, повторяющихся символов
+    Function for clearing feature 'description' of concatenate df_train and df_test 
+        from numbers, signs, repeated characters
    
-    return: ....
+    return: data_descr - cleared feature 'description' of concatenate df_train and df_test 
+        from numbers, signs, repeated characters
     -------
     params:
-    ..... - ....
+    data_descr - feature 'description' of concatenate df_train and df_test
+    config - dict (Dotmap) from configuration file with defined parameters values 
+             (creates from config_reader function by reading data_config.json)
     
     """
 
@@ -329,10 +341,10 @@ def get_clean_description(data_descr, config):
     tokenize = Tokenizer(num_words=config.MAX_WORDS)
     tokenize.fit_on_texts(data_descr)
     
-    ## слова которые будем фильтровать
+    ## the words that we will filter
     filtered_values = set(filtetred_freq_words(100, 5000, tokenize.word_index).keys()) #(100, 9000)
     
-    ## исключаем фильтрованные слова
+    ## exclude filtered words
     data_descr = data_descr.apply(
         lambda x: " ".join([word for word in x.split() if word not in filtered_values]))
 
@@ -340,18 +352,34 @@ def get_clean_description(data_descr, config):
 
 
 
-# Функция преобрабования числовых данных в вектора
-def data_descr_to_nlp(data_descr, config, list_inds):    
+def data_descr_to_nlp(data_descr, config, list_inds):   
+
+    """
+    Function ...
+   
+    return: text_train_sequences, text_test_sequences, text_sub_sequences - 
+        ...  
+    tokenize - ... 
+    -------
+    params:
+    data_descr - feature 'description' of concatenate df_train and df_test 
+        cleared from rare and often occuring words 
+    config - dict (Dotmap) from configuration file with defined parameters values 
+             (creates from config_reader function by reading data_config.json)
+    list_inds - list of data indexes X_sub, X_train, X_test
     
-    ## Токенизируем очищенное и преобразованное описание data description
+    """
+    
+    ## Tokenize the cleaned and transformed description data description
     tokenize = Tokenizer(num_words=config.MAX_WORDS)
     tokenize.fit_on_texts(data_descr)
     
-    # split данных
+    ## data split
     text_train = data_descr.iloc[list_inds[0]]
     text_test = data_descr.iloc[list_inds[1]]
     text_sub = data_descr.iloc[list_inds[2]]
     
+    ## ...
     text_train_sequences = sequence.pad_sequences(
         tokenize.texts_to_sequences(text_train), maxlen=config.MAX_SEQUENCE_LENGTH)
     text_test_sequences = sequence.pad_sequences(
