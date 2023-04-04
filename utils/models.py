@@ -1,5 +1,43 @@
 import pandas as pd
 
+from catboost import CatBoostRegressor
+
+import tensorflow as tf
+from tensorflow.keras import Input
+import tensorflow.keras.layers as L
+from tensorflow.keras.models import Model, Sequential
+
+
+
+def define_cat_boost(config):
+
+    """
+    Function for define CatBoostRegressor model (an object of the CatBoostRegressor class)
+   
+    return: model - CatBoostRegressor model for foolwing train
+    -------
+    params:
+    config - dict (Dotmap) from configuration file with defined parameters values 
+             (creates from config_reader function by reading data_config.json)
+
+    """
+
+    model = CatBoostRegressor(iterations=config.cat_iterations,
+                              depth=config.cat_depth, 
+                              learning_rate=config.cat_learning_rate,
+                              random_seed=config.RANDOM_SEED,
+                              eval_metric=config.cat_eval_metric,
+                              custom_metric=[config.cat_custom_metric_1, 
+                                             config.cat_custom_metric_2],
+                              od_wait=config.cat_od_wait,
+                              grow_policy=config.cat_grow_policy,
+                              l2_leaf_reg=config.cat_l2_leaf_reg,
+                              model_size_reg=config.cat_model_size_reg,
+                              loss_function=config.cat_loss_function #'MAE'
+                              )
+    return model
+
+
 class MyNaiveModel():
     
     """
@@ -37,3 +75,108 @@ class MyNaiveModel():
         predicts = (predicts // 1000) * 1000
         
         return predicts
+    
+
+class SimpleSeqNN(Model):
+
+    def __init__(self, config: dict):
+        super().__init__()
+        self.is_show_summary = config.is_show_summary
+        self.config = config
+        
+        self.inputs = x = Input(shape=(self.config.snn_input_shape,))
+        x = L.Dense(self.config.snn_dense_units_1, 
+                    activation=self.config.snn_dense_activation,
+                    name = 'dense_layer_1')(x)
+        x = L.BatchNormalization()(x)
+        x = L.Dropout(0.5)(x)
+        x = L.Dense(self.config.snn_dense_units_2, 
+                    activation=self.config.snn_dense_activation,
+                    name = 'dense_layer_2')(x)
+        x = L.Dropout(0.25)(x)
+        x = L.Dense(self.config.snn_dense_units_3, 
+                    activation=self.config.snn_dense_activation,
+                    name = 'dense_layer_3')(x)
+        x = L.Dropout(0.5)(x)
+        self.outputs = L.Dense(1, 
+                               activation=self.config.snn_output_activation)(x)
+        
+        
+    def build_model(self):
+        """
+        Метод формирования модели
+        """
+        model = Model(
+            inputs=self.inputs,
+            outputs=self.outputs,
+            name="model_SSNN"
+        )
+        if self.is_show_summary:
+            model.summary()
+        return model
+    
+
+
+def define_simple_seq_nn(config):
+    model = Sequential()
+    model.add(L.Dense(config.snn_dense_units_1, 
+                        input_dim=config.snn_input_shape,
+                        activation=config.snn_dense_activation))
+    model.add(L.BatchNormalization())
+    model.add(L.Dropout(0.5))
+    model.add(L.Dense(config.snn_dense_units_2, 
+                        activation=config.snn_dense_activation))
+    model.add(L.Dropout(0.25))
+    model.add(L.Dense(config.snn_dense_units_3, 
+                        activation=config.snn_dense_activation))
+    model.add(L.Dropout(0.5))
+    model.add(L.Dense(1, activation=config.snn_output_activation))
+    
+    print('model Simple Sequential NN created')
+
+    return model
+
+
+
+
+# class SimpleSeqNN(Model):
+
+#     def __init__(self, config: dict):
+#         super().__init__()
+#         self.is_show_summary = config.is_show_summary
+#         self.config = config
+        
+#         self.block_1 = Sequential()
+#         self.layer_1 = L.Dense(self.config.snn_dense_units_1, 
+#                        input_dim=self.config.snn_input_shape,
+#                        activation=self.config.snn_dense_activation
+#                        #1024, input_dim=self.config.snn_input_shape, activation="relu"
+#                        )
+#         self.bn_layer = L.BatchNormalization()
+#         self.d_out05_layer = L.Dropout(0.5)
+#         self.layer_2 = L.Dense(self.config.snn_dense_units_2, 
+#                        activation=self.config.snn_dense_activation
+#                        #512, activation="relu"
+#                        )
+#         self.d_out025_layer = L.Dropout(0.25)
+#         self.layer_3 = L.Dense(self.config.snn_dense_units_3, 
+#                        activation=self.config.snn_dense_activation
+#                        #256, activation="relu"
+#                        )
+#         self.d_out05_layer = L.Dropout(0.5)
+#         self.regressor_layer = L.Dense(1, #activation="linear"
+#                           activation=self.config.snn_output_activation
+#                           )
+        
+
+#     def call(self, inputs):
+#         x = self.block_1(inputs)
+#         x = self.layer_1(x)
+#         x = self.bn_layer(x)
+#         x = self.d_out05_layer(x)
+#         x = self.layer_2(x)
+#         x = self.d_out025_layer(x)
+#         x = self.layer_3(x)
+#         x = self.d_out05_layer(x)
+                
+#         return self.regressor_layer(x)
