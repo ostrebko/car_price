@@ -5,3 +5,7 @@
 *.csv
 */catboost_info/*
 catboost_info/*
+/data/*.hdf5
+/models/best_model_nn1.hdf5
+/models/best_weights_nn1.hdf5
+/data/best_models/best_weights.hdf5
