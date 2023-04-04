@@ -4,14 +4,7 @@ import os
 import re
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-
-from catboost import CatBoostRegressor
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing import sequence
-
-from nltk.corpus import stopwords
-from pymorphy2 import MorphAnalyzer
-
+import matplotlib.pyplot as plt
 
 
 def mape_func(y_true, y_pred):
@@ -242,149 +235,47 @@ def create_preproc_data(config, paths):
     return X_sub, X_train, X_test, y_train, y_test # X, y, 
 
 
-def define_cat_boost(config):
-
+def plot_history_loss(history):
+    
     """
-    Function for define CatBoostRegressor model (an object of the CatBoostRegressor class)
+    Function to ...
    
-    return: model - CatBoostRegressor model for foolwing train
+    return: None
     -------
     params:
-    config - dict (Dotmap) from configuration file with defined parameters values 
-             (creates from config_reader function by reading data_config.json)
+    history - ...
 
     """
 
-    model = CatBoostRegressor(iterations=config.cat_iterations,
-                              depth=config.cat_depth, 
-                              learning_rate=config.cat_learning_rate,
-                              random_seed=config.RANDOM_SEED,
-                              eval_metric=config.cat_eval_metric,
-                              custom_metric=[config.cat_custom_metric_1, 
-                                             config.cat_custom_metric_2],
-                              od_wait=config.cat_od_wait,
-                              grow_policy=config.cat_grow_policy,
-                              l2_leaf_reg=config.cat_l2_leaf_reg,
-                              model_size_reg=config.cat_model_size_reg,
-                              loss_function=config.cat_loss_function #'MAE'
-                              )
-    return model
+
+    plt.title('Loss')
+    plt.plot(history.history['MAPE'], label='train')
+    plt.plot(history.history['val_MAPE'], label='test')
+    plt.legend(labels=['train','test'], loc='upper right')
+    plt.show();
 
 
 
-def clean_stopwords(str_2_clean):
-
+def save_best_model(model, paths, 
+                    best_trained_weights,
+                    best_weights_to_save,
+                    best_model_to_save):
+    
     """
-    Function for clearing input string from numbers, signs, repeated characters
+    Function to # load best weights model and save model
    
-    return: cleared input string
+    return: None
     -------
     params:
-    str_2_clean - string to be creared from numbers, signs, repeated characters
-    
-    """
-    
-    stopwords_list = stopwords.words('english') + stopwords.words('russian')
-    morph = MorphAnalyzer()
-
-    str_2_clean=re.sub(r'[^\w\s]|([0-9])', ' ', str_2_clean)
-    str_2_clean=re.sub(' +', ' ', str_2_clean.lower()).strip(' ')
-    str_2_clean=re.sub("(.)\\1{2,}", "\\1", str_2_clean)
-    words = str_2_clean.split() 
-    clean_words = [morph.normal_forms(word)[0] for word in words 
-                   if (word not in stopwords_list) and len(word)>2]
-    return " ".join(clean_words)
-
-
-
-def filtetred_freq_words(max_freq_to_remove, min_freq_to_remove, dict_from_data):
-    
-    """
-    Function makes the dictionary with words that occur too often and too rarely
-   
-    return: filtered_dict - dictionary with too often and too rarely words
-    -------
-    params:
-    max_freq_to_remove - an integer specifying the number of rare words
-    min_freq_to_remove - an integer specifying the number of often words
-    dict_from_data - the dict of tokenize.word_index defines a number 
-        that determines how many times a word has occurred in the data 
-    
-    """
-    
-    filtered_dict = dict(
-        filter(lambda item: (item[1]<max_freq_to_remove)or(item[1]>min_freq_to_remove), 
-               dict_from_data.items()))
-    return filtered_dict
-
-
-def get_clean_description(data_descr, config):
-
-    """
-    Function for clearing feature 'description' of concatenate df_train and df_test 
-        from numbers, signs, repeated characters
-   
-    return: data_descr - cleared feature 'description' of concatenate df_train and df_test 
-        from numbers, signs, repeated characters
-    -------
-    params:
-    data_descr - feature 'description' of concatenate df_train and df_test
-    config - dict (Dotmap) from configuration file with defined parameters values 
-             (creates from config_reader function by reading data_config.json)
-    
+    model - ...
+    paths - ...
+    best_trained_weights - ...
+    best_weights_to_save - ...
+    best_model_to_save - ...
     """
 
-    # Cleaning from stopwords
-    data_descr = data_descr.apply(clean_stopwords)
-    print('clean stopwords of data.description done')
     
-    tokenize = Tokenizer(num_words=config.MAX_WORDS)
-    tokenize.fit_on_texts(data_descr)
-    
-    ## the words that we will filter
-    filtered_values = set(filtetred_freq_words(100, 5000, tokenize.word_index).keys()) #(100, 9000)
-    
-    ## exclude filtered words
-    data_descr = data_descr.apply(
-        lambda x: " ".join([word for word in x.split() if word not in filtered_values]))
-
-    return data_descr
-
-
-
-def data_descr_to_nlp(data_descr, config, list_inds):   
-
-    """
-    Function ...
-   
-    return: text_train_sequences, text_test_sequences, text_sub_sequences - 
-        ...  
-    tokenize - ... 
-    -------
-    params:
-    data_descr - feature 'description' of concatenate df_train and df_test 
-        cleared from rare and often occuring words 
-    config - dict (Dotmap) from configuration file with defined parameters values 
-             (creates from config_reader function by reading data_config.json)
-    list_inds - list of data indexes X_sub, X_train, X_test
-    
-    """
-    
-    ## Tokenize the cleaned and transformed description data description
-    tokenize = Tokenizer(num_words=config.MAX_WORDS)
-    tokenize.fit_on_texts(data_descr)
-    
-    ## data split
-    text_train = data_descr.iloc[list_inds[0]]
-    text_test = data_descr.iloc[list_inds[1]]
-    text_sub = data_descr.iloc[list_inds[2]]
-    
-    ## ...
-    text_train_sequences = sequence.pad_sequences(
-        tokenize.texts_to_sequences(text_train), maxlen=config.MAX_SEQUENCE_LENGTH)
-    text_test_sequences = sequence.pad_sequences(
-        tokenize.texts_to_sequences(text_test), maxlen=config.MAX_SEQUENCE_LENGTH)
-    text_sub_sequences = sequence.pad_sequences(
-        tokenize.texts_to_sequences(text_sub), maxlen=config.MAX_SEQUENCE_LENGTH)
-    
-    return text_train_sequences, text_test_sequences, text_sub_sequences, tokenize
+    model.load_weights(os.path.join(paths.PATH_BEST_MODEL, best_trained_weights))
+    model.save_weights(os.path.join(paths.PATH_MODELS, best_weights_to_save))
+    model.save(os.path.join(paths.PATH_MODELS, best_model_to_save))
+    print('best weights and model of Simple Sequential Model saved')
