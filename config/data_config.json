@@ -77,6 +77,76 @@
   "cat_verbose_eval" : 100,
 
 
+  "//" :  "---------------------------------",
+  "//" :  "Settings for callbacks functions",
+
+  "//" :  "ModelCheckpoint",
+  "monitor_m_checkpnt" : "val_MAPE",
+  "verbose_m_checkpnt" : 1,
+  "mode_m_checkpnt" : "min",
+  "save_best_only" : true,
+  "best_weights_name" : "best_weights.hdf5",
+
+  "//" :  "EarlyStopping",
+  "monitor_early_stop" : "val_MAPE",
+  "patience_early_stop" : 85,
+  "restore_best_weights" : true,
+
+  "//" :  "ReduceLROnPlateau",
+  "monitor_reduce_plteau" : "val_MAPE",
+  "factor_reduce_plteau" : 0.5,
+  "patience_reduce_plteau" : 25,
+  "verbose_reduce_plteau" : 1,
+  "min_lr_ratio" : 1000,
+  "mode_reduce_plteau" : "min",
+
+
+
+  "//" :  "---------------------------------",
+  "//" :  "Settings Simple Sequential Model",
+
+  "//" :  "dimensionality of the output space in Dense layer",
+  "snn_input_shape" : null,
+  
+  "//" :  "dimensionality of the output space in Dense layer",
+  "snn_dense_units_1" : 1024,
+  "snn_dense_units_2" : 512,
+  "snn_dense_units_3" : 256,
+  
+  "//" :  "function activation in Dense layer",
+  "snn_dense_activation" : "relu",
+  "snn_output_activation" : "linear",
+
+  "//" :  "Dropout ratio",
+  "snn_d_out_ratio_025" : 0.25,
+  "snn_d_out_ratio_050" : 0.50,
+  
+  
+  "//" :  "Settings for define optimizer Simple Sequential Model",
+  "snn_lr" : 0.01,
+  "snn_beta_1" : 0.992,
+  "snn_beta_2" : 0.999,
+  "snn_epsilon" : 2e-06,
+  "snn_amsgrad" : false,
+
+
+  "//" :  "Settings for compile Simple Sequential Model",
+  "snn_loss_compile" : "MAPE",
+  "snn_metric_compile" : "MAPE",
+
+
+  "//" :  "Settings for fit Simple Sequential Model",
+  "snn_batch_size" : 512,
+  "snn_epochs" : 500,
+  "snn_verbose" : 1,
+
+  "//" :  "Settings for save best Simple Sequential Model after train",
+  "snn_best_weights_name" : "best_weights_nn1.hdf5",
+  "snn_best_model_name" : "best_model_nn1.hdf5",
+
+
+
+
 
   "//" :  "---------------------------------",
   "//" : "Basic settings",
@@ -107,29 +177,6 @@
   "IMG_CHANNELS" : 3,
 
 
-  "//" :  "---------------------------------",
-  "//" :  "Settings for callbacks functions",
-
-  "//" :  "ModelCheckpoint",
-  "monitor_m_checkpnt" : "val_accuracy",
-  "verbose_m_checkpnt" : 1,
-  "mode_m_checkpnt" : "max",
-  "save_best_only" : true,
-  "best_model_name" : "best_model.hdf5",
-
-  "//" :  "EarlyStopping",
-  "monitor_early_stop" : "val_accuracy",
-  "patience_early_stop" : 6,
-  "restore_best_weights" : true,
-
-  "//" :  "ReduceLROnPlateau",
-  "monitor_reduce_plteau" : "val_accuracy",
-  "factor_reduce_plteau" : 0.2,
-  "patience_reduce_plteau" : 3,
-  "verbose_reduce_plteau" : 1,
-  "min_lr_ratio" : 100,
-  
-
 
   "//" :  "---------------------------------",
   "//" :  "Settings for creating model",
@@ -145,39 +192,7 @@
 
 
 
-  "//" :  "---------------------------------",
-  "//" :  "Settings for new head of base model",
-
-  "//" :  "dimensionality of the output space in Dense layer",
-  "dense_units" : 256,
   
-  "//" :  "function activation in Dense layer",
-  "dense_activation" : "relu",
-
-  "//" :  "Dropout ratio",
-  "dropout_ratio" : 0.25,
-
-  "//" :  "function activation in output layer (logistic layer)",
-  "output_activation" : "softmax",
-
-  "//" :  "model name",
-  "model_name" : "Custom model",
-
-  "//" :  "show or hide summary and trainings layers",
-  "is_show_summary" : false,
-  "is_show_train_layers" : true,
-  
-  "//" :  "fine tinnig coef for unfreeze layers",
-  "f_tune_coef" : 1,
-
-  "//" :  "param to train all layers if True",
-  "train_all_base_layers" : false,
-  
-
-  "//" :  "---------------------------------",
-  "//" :  "Settings for compile model",
-  "loss_compile" : "categorical_crossentropy",
-  "metric_compile" : "accuracy",
 
 
 
