@@ -173,6 +173,7 @@ def callbacks(PATH_BEST_MODEL, config):
     return [checkpoint, earlystop, reduce_lr]
 
 
+
 def define_snn_optimizer(config):
     optimizer = tf.keras.optimizers.Adam(learning_rate=config.snn_lr,
                                          beta_1=config.snn_beta_1, 
@@ -183,6 +184,9 @@ def define_snn_optimizer(config):
     return optimizer
 
 
+
 def define_mnn_optimizer(mnn_lr):
     optimizer = tf.keras.optimizers.Adam(learning_rate=mnn_lr)
     return optimizer
+
+
