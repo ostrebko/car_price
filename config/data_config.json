@@ -26,6 +26,10 @@
   "//" :  "choose SEED value",
   "RANDOM_SEED" : 32,
 
+  "//" :  "LR that will change in functions",
+  "LR" : 0.01,
+
+
 
   "//" :  "---------------------------------",
   "//" : "MorphAnalyzer parameters ",
@@ -35,6 +39,7 @@
 
   "//" : "maximum number of words in each review",
   "MAX_SEQUENCE_LENGTH" : 256, 
+
 
 
   "//" :  "---------------------------------",
@@ -77,6 +82,7 @@
   "cat_verbose_eval" : 100,
 
 
+
   "//" :  "---------------------------------",
   "//" :  "Settings for callbacks functions",
 
@@ -107,7 +113,7 @@
 
   "//" :  "dimensionality of the output space in Dense layer",
   "snn_input_shape" : null,
-  
+    
   "//" :  "dimensionality of the output space in Dense layer",
   "snn_dense_units_1" : 1024,
   "snn_dense_units_2" : 512,
@@ -145,54 +151,83 @@
   "snn_best_model_name" : "best_model_nn1.hdf5",
 
 
-
-
-
+  
   "//" :  "---------------------------------",
-  "//" : "Basic settings",
+  "//" :  "Settings Multi Sequential Model",
   
-  "//" : "number of epochs for learning",
-  "EPOCHS" : 5, 
+  "//" :  "NLP Model part",
+  "mnn_nlp_name_1" : "seq_description",
   
-  "//" : "reduce the batch if the network is large",
-  "//" : "otherwise it will not fit into the memory on the GPU",
-  "BATCH_SIZE" : 64, 
+  "//" :  "dimensionality of the output space and return seq in LSTM layer 1",
+  "mnn_lstm_units_1": 1024,
+  "mnn_return_seq_1": true,
 
-  "//" : "zero learning rate, non-change param",
-  "LR0" : 1e-4,
+  "//" :  "dimensionality of the output space in LSTM layer 2",
+  "mnn_lstm_units_2": 512,
 
-  "//" : "learning rate, will change in training model",
-  "LR" : 1e-4,
+  "//" :  "dimensionality of the output space in Dense layer",
+  "mnn_nlp_dense_units_1" : 256,
+
+  "//" :  "function activation in Dense layer",
+  "mnn_nlp_dense_activation" : "relu",
+
+
+  "//" :  "MLP Model part",
+  "//" :  "dimensionality of the output space in Dense layer",
+  "mnn_input_shape" : null,
+
+  "//" :  "dimensionality of the output space in Dense layer",
+  "mnn_mlp_dense_units_1" : 1024,
+  "mnn_mlp_dense_units_2" : 512,
   
-  "//" :  "the proportion of data allocated to the test = 20%",
-  "VAL_SPLIT" : 0.2,
-
-  "//" :  "the number of classes in task",
-  "CLASS_NUM" : 10,
-
-  "//" :  "size of pictures that we send in model",
-  "IMG_SIZE" : 224,
-
-  "//" :  "RGB has 3 channel",
-  "IMG_CHANNELS" : 3,
+  "//" :  "function activation in Dense layer",
+  "mnn_mlp_dense_activation_1" : "relu",
+  "mnn_mlp_dense_activation_2" : "relu",
 
 
-
-  "//" :  "---------------------------------",
-  "//" :  "Settings for creating model",
+  "//" :  "head of NLP & MLP Model",
+  "mnn_head_dense_units_1" : 256,
+  "mnn_head_dense_activation_1" : "relu",
   
-  "//" :  "weights of basic models",
-  "weights" : "imagenet",
+  "mnn_output_activation" : "linear",
+
+
+  "//" :  "Settings for define optimizer Multi Input Sequential Model in different steps",
+  "mnn_lr_step_1" : 0.01,
+  "mnn_lr_step_2" : 0.005,
+  "mnn_lr_step_3" : 0.002,
+  "mnn_lr_step_4" : 0.0002,
+  "mnn_lr_step_5" : 0.0001,
+  "mnn_lr_step_6" : 0.0000005,
   
-  "//" :  "add or exclude 'Head' ",
-  "include_top" : false,
 
-  "//" :  "param to set to train all layers",
-  "trainable" : true,
-
+  "//" :  "Settings for compile Simple Sequential Model",
+  "mnn_loss_compile" : "MAPE",
+  "mnn_metric_compile" : "MAPE",
 
 
-  
+  "//" :  "Settings for fit Multi Input Sequential Model",
+  "mnn_batch_size" : 512,
+  "mnn_epochs" : 500,
+  "mnn_verbose" : 1,
+
+  "//" :  "Settings for save best Simple Sequential Model after train",
+  "mnn_best_weights_name_st_1" : "best_weights_mnn_st_1.hdf5",
+  "mnn_best_model_name_st_1" : "best_model_mnn_st_1.hdf5",
+  "mnn_best_weights_name_st_2" : "best_weights_mnn_st_2.hdf5",
+  "mnn_best_model_name_st_2" : "best_model_mnn_st_2.hdf5",
+  "mnn_best_weights_name_st_3" : "best_weights_mnn_st_3.hdf5",
+  "mnn_best_model_name_st_3" : "best_model_mnn_st_3.hdf5",
+  "mnn_best_weights_name_st_4" : "best_weights_mnn_st_4.hdf5",
+  "mnn_best_model_name_st_4" : "best_model_mnn_st_4.hdf5",
+  "mnn_best_weights_name_st_5" : "best_weights_mnn_st_5.hdf5",
+  "mnn_best_model_name_st_5" : "best_model_mnn_st_5.hdf5",
+  "mnn_best_weights_name_st_6" : "best_weights_mnn_st_6.hdf5",
+  "mnn_best_model_name_st_6" : "best_model_mnn_st_6.hdf5",
+
+
+
+
 
 
 
