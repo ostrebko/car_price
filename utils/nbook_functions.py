@@ -6,6 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import PIL
+import cv2
 
 
 def mape_func(y_true, y_pred):
@@ -273,6 +274,7 @@ def save_best_model(model, paths,
     best_trained_weights - ...
     best_weights_to_save - ...
     best_model_to_save - ...
+
     """
 
     
@@ -293,6 +295,7 @@ def show_sample_imgs(paths, n_samples):
     params:
     
     paths - ...
+    n_samples - ...
     
     """
     
@@ -325,4 +328,89 @@ def show_sample_imgs(paths, n_samples):
         print(im.size)
         
 
+
+def get_image_array(index, paths, config):
     
+    """
+    Function to # load best weights model and save model
+   
+    return: images_train - 
+    -------
+    params:
+    
+    index - ...
+    paths - ...
+    config - ...
+    
+    """
+
+    images_train = []
+    
+    data = concat_train_test(paths)
+    size = (config.img_weight, config.img_height)
+
+    for index, sell_id in enumerate(data['sell_id'].iloc[index].values):
+        image = cv2.imread(os.path.join(paths.PATH_DATA_IMGS, str(sell_id)+'.jpg'))
+        assert(image is not None)
+        image = cv2.resize(image, size)
+        images_train.append(image)
+    images_train = np.array(images_train)
+    print('images shape', images_train.shape, 'dtype', images_train.dtype)
+    return(images_train)
+
+
+def show_sample_augmentations(paths, augmentation):
+    
+    """
+    Function to # load best weights model and save model
+   
+    return: None
+    -------
+    params:
+    
+    paths - ...
+    augmentation - ...
+    
+    """
+    
+    train = pd.read_csv(os.path.join(paths.PATH_DATA, 'train.csv'))
+    random_image = train.sample(n=1)
+    random_image_filename = random_image['sell_id'].values[0]
+
+    img_1 = cv2.imread(os.path.join(paths.PATH_DATA_IMGS, 
+                                    str(random_image_filename)+'.jpg'))
+    
+    plt.figure(figsize=(12,8))
+    
+    for i in range(0,6):
+        x = augmentation(image=img_1)['image']
+        plt.subplot(3,3, i+1)
+        plt.imshow(x)
+    plt.show()
+
+
+
+def make_augmentations(images, augmentation):
+    
+    """
+    Function to # load best weights model and save model
+   
+    return: None
+    -------
+    params:
+    
+    paths - ...
+    augmentation - ...
+
+    """
+    
+    print('use of augmentations', end = '')
+    augmented_images = np.empty(images.shape)
+    for i in range(images.shape[0]):
+        if i % 200 == 0:
+            print('.', end = '')
+        augment_dict = augmentation(image = images[i])
+        augmented_image = augment_dict['image']
+        augmented_images[i] = augmented_image
+    print('')
+    return augmented_images
