@@ -5,6 +5,7 @@ import re
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import PIL
 
 
 def mape_func(y_true, y_pred):
@@ -279,3 +280,49 @@ def save_best_model(model, paths,
     model.save_weights(os.path.join(paths.PATH_MODELS, best_weights_to_save))
     model.save(os.path.join(paths.PATH_MODELS, best_model_to_save))
     print('best weights and model of Simple Sequential Model saved')
+
+
+
+def show_sample_imgs(paths, n_samples):
+    
+    """
+    Function to # load best weights model and save model
+   
+    return: None
+    -------
+    params:
+    
+    paths - ...
+    
+    """
+    
+    train = pd.read_csv(os.path.join(paths.PATH_DATA, 'train.csv'))
+
+    random_image = train.sample(n=n_samples)
+    random_image_paths = random_image['sell_id'].values
+    random_image_cat = random_image['price'].values
+
+    if n_samples > 1:
+        
+        plt.figure(figsize = (12,9))
+        
+        for index, path in enumerate(random_image_paths):
+            im = PIL.Image.open(os.path.join(paths.PATH_DATA_IMGS, str(path)+'.jpg'))
+            plt.subplot(3, 3, index+1)
+            plt.imshow(im)
+            plt.title('price: ' + str(random_image_cat[index]))
+            plt.axis('off')
+        plt.show()
+
+    else:
+        plt.figure(figsize = (4,3))
+        im = PIL.Image.open(os.path.join(paths.PATH_DATA_IMGS, 
+                                         str(random_image_paths[0])+'.jpg'))
+        plt.imshow(im)
+        plt.title('price: ' + str(random_image_cat[0]))
+        plt.axis('off')
+        plt.show()
+        print(im.size)
+        
+
+    
