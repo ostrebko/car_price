@@ -181,3 +181,8 @@ def define_snn_optimizer(config):
                                          amsgrad=config.snn_amsgrad,
                                          )
     return optimizer
+
+
+def define_mnn_optimizer(mnn_lr):
+    optimizer = tf.keras.optimizers.Adam(learning_rate=mnn_lr)
+    return optimizer
