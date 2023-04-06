@@ -227,6 +227,17 @@
 
 
 
+"//" :  "---------------------------------",
+"//" :  "Settings Multi Input Model with images",
+
+"//" :  "Basic settings",
+"img_weight" : 320,
+"img_height" : 240,
+
+
+
+
+
 
 
 
