@@ -87,16 +87,16 @@ class SimpleSeqNN(Model):
         self.inputs = x = Input(shape=(self.config.snn_input_shape,))
         x = L.Dense(self.config.snn_dense_units_1, 
                     activation=self.config.snn_dense_activation,
-                    name = 'dense_layer_1')(x)
+                    name='dense_layer_1')(x)
         x = L.BatchNormalization()(x)
         x = L.Dropout(0.5)(x)
         x = L.Dense(self.config.snn_dense_units_2, 
                     activation=self.config.snn_dense_activation,
-                    name = 'dense_layer_2')(x)
+                    name='dense_layer_2')(x)
         x = L.Dropout(0.25)(x)
         x = L.Dense(self.config.snn_dense_units_3, 
                     activation=self.config.snn_dense_activation,
-                    name = 'dense_layer_3')(x)
+                    name='dense_layer_3')(x)
         x = L.Dropout(0.5)(x)
         self.outputs = L.Dense(1, 
                                activation=self.config.snn_output_activation)(x)
@@ -104,7 +104,7 @@ class SimpleSeqNN(Model):
         
     def build_model(self):
         """
-        Метод формирования модели
+        Model formation method
         """
         model = Model(
             inputs=self.inputs,
@@ -117,66 +117,63 @@ class SimpleSeqNN(Model):
     
 
 
-def define_simple_seq_nn(config):
-    model = Sequential()
-    model.add(L.Dense(config.snn_dense_units_1, 
-                        input_dim=config.snn_input_shape,
-                        activation=config.snn_dense_activation))
-    model.add(L.BatchNormalization())
-    model.add(L.Dropout(0.5))
-    model.add(L.Dense(config.snn_dense_units_2, 
-                        activation=config.snn_dense_activation))
-    model.add(L.Dropout(0.25))
-    model.add(L.Dense(config.snn_dense_units_3, 
-                        activation=config.snn_dense_activation))
-    model.add(L.Dropout(0.5))
-    model.add(L.Dense(1, activation=config.snn_output_activation))
+class MultiSeqNN(Model):
+
+    def __init__(self, config: dict, tokenize):
+        super().__init__()
+        self.is_show_summary = config.is_show_summary
+        self.config = config
+        
+        self.inputs_1 = x1 = Input(shape=(self.config.MAX_SEQUENCE_LENGTH,), 
+                                          name=config.mnn_nlp_name_1)
+        x1 = L.Embedding(len(tokenize.word_index)+1, 
+                            config.MAX_SEQUENCE_LENGTH,)(x1)
+        x1 = L.BatchNormalization()(x1)
+        x1 = L.LSTM(config.mnn_lstm_units_1, 
+                       return_sequences=config.mnn_return_seq_1)(x1)
+        x1 = L.Dropout(0.25)(x1)
+        x1 = L.LSTM(config.mnn_lstm_units_2)(x1)
+        x1 = L.Dropout(0.5)(x1)
+        x1 = L.Dense(self.config.mnn_nlp_dense_units_1, 
+                     activation=self.config.mnn_nlp_dense_activation,
+                     )(x1)
+        model_nlp = L.Dropout(0.5)(x1)
+
+
+        self.inputs_2 = x2 = Input(shape=(self.config.mnn_input_shape,))
+        x2 = L.Dense(self.config.mnn_mlp_dense_units_1, 
+                     activation=self.config.mnn_mlp_dense_activation_1,
+                     )(x2)
+        x2 = L.BatchNormalization()(x2)
+        x2 = L.Dropout(0.25)(x2)
+        x2 = L.Dense(self.config.mnn_mlp_dense_units_2, 
+                    activation=self.config.mnn_mlp_dense_activation_2,
+                    )(x2)
+        model_mlp = L.Dropout(0.5)(x2)
+
+        combinedInput = L.concatenate([model_nlp, model_mlp]) #.output, .output
+        
+        # being our regression head
+        self.head = L.Dense(config.mnn_head_dense_units_1, 
+                            activation=config.mnn_head_dense_activation_1
+                            )(combinedInput)
+        #self.head = L.BatchNormalization()(self.head)
+        self.head = L.Dropout(0.5)(self.head)
+        self.head = L.Dense(1, 
+                            activation=config.mnn_output_activation
+                            )(self.head)
+        
+        
+    def build_model(self):
+        """
+        Model formation method
+        """
+        model = Model(
+            inputs=[self.inputs_1, self.inputs_2],
+            outputs=self.head,
+            name="model_MultiSeqNN"
+        )
+        if self.is_show_summary:
+            model.summary()
+        return model
     
-    print('model Simple Sequential NN created')
-
-    return model
-
-
-
-
-# class SimpleSeqNN(Model):
-
-#     def __init__(self, config: dict):
-#         super().__init__()
-#         self.is_show_summary = config.is_show_summary
-#         self.config = config
-        
-#         self.block_1 = Sequential()
-#         self.layer_1 = L.Dense(self.config.snn_dense_units_1, 
-#                        input_dim=self.config.snn_input_shape,
-#                        activation=self.config.snn_dense_activation
-#                        #1024, input_dim=self.config.snn_input_shape, activation="relu"
-#                        )
-#         self.bn_layer = L.BatchNormalization()
-#         self.d_out05_layer = L.Dropout(0.5)
-#         self.layer_2 = L.Dense(self.config.snn_dense_units_2, 
-#                        activation=self.config.snn_dense_activation
-#                        #512, activation="relu"
-#                        )
-#         self.d_out025_layer = L.Dropout(0.25)
-#         self.layer_3 = L.Dense(self.config.snn_dense_units_3, 
-#                        activation=self.config.snn_dense_activation
-#                        #256, activation="relu"
-#                        )
-#         self.d_out05_layer = L.Dropout(0.5)
-#         self.regressor_layer = L.Dense(1, #activation="linear"
-#                           activation=self.config.snn_output_activation
-#                           )
-        
-
-#     def call(self, inputs):
-#         x = self.block_1(inputs)
-#         x = self.layer_1(x)
-#         x = self.bn_layer(x)
-#         x = self.d_out05_layer(x)
-#         x = self.layer_2(x)
-#         x = self.d_out025_layer(x)
-#         x = self.layer_3(x)
-#         x = self.d_out05_layer(x)
-                
-#         return self.regressor_layer(x)
