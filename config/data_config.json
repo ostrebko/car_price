@@ -1,5 +1,5 @@
 {
-  "//" :  "---------------------------------",
+  "//" :  "---------------------------------------",
   "//" : "PATHS & seed settings",
 
   "//" :  "directory for general data path",
@@ -31,7 +31,8 @@
 
 
 
-  "//" :  "---------------------------------",
+
+  "//" :  "---------------------------------------",
   "//" : "MorphAnalyzer parameters ",
   
   "//" : "maximum number of used words",
@@ -42,7 +43,8 @@
 
 
 
-  "//" :  "---------------------------------",
+
+  "//" :  "---------------------------------------",
   "//" : "Catboost parameters ",
   
   "//" : "...",
@@ -83,7 +85,8 @@
 
 
 
-  "//" :  "---------------------------------",
+
+  "//" :  "---------------------------------------",
   "//" :  "Settings for callbacks functions",
 
   "//" :  "ModelCheckpoint",
@@ -108,7 +111,8 @@
 
 
 
-  "//" :  "---------------------------------",
+
+  "//" :  "---------------------------------------",
   "//" :  "Settings Simple Sequential Model",
 
   "//" :  "dimensionality of the output space in Dense layer",
@@ -151,88 +155,184 @@
   "snn_best_model_name" : "best_model_nn1.hdf5",
 
 
+
   
-  "//" :  "---------------------------------",
+  "//" :  "---------------------------------------",
   "//" :  "Settings Multi Sequential Model",
   
-  "//" :  "NLP Model part",
-  "mnn_nlp_name_1" : "seq_description",
+  "//" :  "---------- NLP part of model ----------",
+  "msnn_nlp_name_1" : "seq_description",
   
   "//" :  "dimensionality of the output space and return seq in LSTM layer 1",
-  "mnn_lstm_units_1": 1024,
-  "mnn_return_seq_1": true,
+  "msnn_lstm_units_1": 1024,
+  "msnn_return_seq_1": true,
 
   "//" :  "dimensionality of the output space in LSTM layer 2",
-  "mnn_lstm_units_2": 512,
+  "msnn_lstm_units_2": 512,
 
   "//" :  "dimensionality of the output space in Dense layer",
-  "mnn_nlp_dense_units_1" : 256,
+  "msnn_nlp_dense_units_1" : 256,
 
   "//" :  "function activation in Dense layer",
-  "mnn_nlp_dense_activation" : "relu",
+  "msnn_nlp_dense_activation" : "relu",
 
 
-  "//" :  "MLP Model part",
+  "//" :  "---------- Tabular part of model ---------- ",
   "//" :  "dimensionality of the output space in Dense layer",
-  "mnn_input_shape" : null,
+  "msnn_input_shape" : null,
 
   "//" :  "dimensionality of the output space in Dense layer",
-  "mnn_mlp_dense_units_1" : 1024,
-  "mnn_mlp_dense_units_2" : 512,
+  "msnn_tab_dense_units_1" : 1024,
+  "msnn_tab_dense_units_2" : 512,
   
   "//" :  "function activation in Dense layer",
-  "mnn_mlp_dense_activation_1" : "relu",
-  "mnn_mlp_dense_activation_2" : "relu",
+  "msnn_tab_dense_activation_1" : "relu",
+  "msnn_tab_dense_activation_2" : "relu",
 
 
-  "//" :  "head of NLP & MLP Model",
-  "mnn_head_dense_units_1" : 256,
-  "mnn_head_dense_activation_1" : "relu",
+  "//" :  "---------- Head of NLP & TAB Model ---------- ",
+  "msnn_head_dense_units_1" : 256,
+  "msnn_head_dense_activation_1" : "relu",
   
-  "mnn_output_activation" : "linear",
+  "msnn_output_activation" : "linear",
 
 
   "//" :  "Settings for define optimizer Multi Input Sequential Model in different steps",
-  "mnn_lr_step_1" : 0.01,
-  "mnn_lr_step_2" : 0.005,
-  "mnn_lr_step_3" : 0.002,
-  "mnn_lr_step_4" : 0.0002,
-  "mnn_lr_step_5" : 0.0001,
-  "mnn_lr_step_6" : 0.0000005,
+  "msnn_lr_step_1" : 0.01,
+  "msnn_lr_step_2" : 0.005,
+  "msnn_lr_step_3" : 0.002,
+  "msnn_lr_step_4" : 0.0002,
+  "msnn_lr_step_5" : 0.0001,
+  "msnn_lr_step_6" : 0.0000005,
   
 
   "//" :  "Settings for compile Simple Sequential Model",
-  "mnn_loss_compile" : "MAPE",
-  "mnn_metric_compile" : "MAPE",
+  "msnn_loss_compile" : "MAPE",
+  "msnn_metric_compile" : "MAPE",
 
 
   "//" :  "Settings for fit Multi Input Sequential Model",
-  "mnn_batch_size" : 512,
-  "mnn_epochs" : 500,
-  "mnn_verbose" : 1,
+  "msnn_batch_size" : 512,
+  "msnn_epochs" : 500,
+  "msnn_verbose" : 1,
 
   "//" :  "Settings for save best Simple Sequential Model after train",
-  "mnn_best_weights_name_st_1" : "best_weights_mnn_st_1.hdf5",
-  "mnn_best_model_name_st_1" : "best_model_mnn_st_1.hdf5",
-  "mnn_best_weights_name_st_2" : "best_weights_mnn_st_2.hdf5",
-  "mnn_best_model_name_st_2" : "best_model_mnn_st_2.hdf5",
-  "mnn_best_weights_name_st_3" : "best_weights_mnn_st_3.hdf5",
-  "mnn_best_model_name_st_3" : "best_model_mnn_st_3.hdf5",
-  "mnn_best_weights_name_st_4" : "best_weights_mnn_st_4.hdf5",
-  "mnn_best_model_name_st_4" : "best_model_mnn_st_4.hdf5",
-  "mnn_best_weights_name_st_5" : "best_weights_mnn_st_5.hdf5",
-  "mnn_best_model_name_st_5" : "best_model_mnn_st_5.hdf5",
-  "mnn_best_weights_name_st_6" : "best_weights_mnn_st_6.hdf5",
-  "mnn_best_model_name_st_6" : "best_model_mnn_st_6.hdf5",
+  "msnn_best_weights_name_st_1" : "best_weights_msnn_st_1.hdf5",
+  "msnn_best_model_name_st_1" : "best_model_msnn_st_1.hdf5",
+  "msnn_best_weights_name_st_2" : "best_weights_msnn_st_2.hdf5",
+  "msnn_best_model_name_st_2" : "best_model_msnn_st_2.hdf5",
+  "msnn_best_weights_name_st_3" : "best_weights_msnn_st_3.hdf5",
+  "msnn_best_model_name_st_3" : "best_model_msnn_st_3.hdf5",
+  "msnn_best_weights_name_st_4" : "best_weights_msnn_st_4.hdf5",
+  "msnn_best_model_name_st_4" : "best_model_msnn_st_4.hdf5",
+  "msnn_best_weights_name_st_5" : "best_weights_msnn_st_5.hdf5",
+  "msnn_best_model_name_st_5" : "best_model_msnn_st_5.hdf5",
+  "msnn_best_weights_name_st_6" : "best_weights_msnn_st_6.hdf5",
+  "msnn_best_model_name_st_6" : "best_model_msnn_st_6.hdf5",
 
 
 
-"//" :  "---------------------------------",
-"//" :  "Settings Multi Input Model with images",
 
-"//" :  "Basic settings",
-"img_weight" : 320,
-"img_height" : 240,
+  "//" :  "---------------------------------------",
+  "//" :  "Settings Multi Input model with images",
+
+  "//" :  "---------- Images part of model ----------",
+  "img_weight" : 320,
+  "img_height" : 240,
+  "img_channels" : 3,
+  
+  "//" :  "weights of basic img model",
+  "minn_weights" : "imagenet",
+
+  "//" :  "add or exclude 'Head' ",
+  "minn_include_top": false,
+  
+  "//" :  "param to set to train all layers",
+  "minn_base_model_trainable" : true,
+
+  "//" :  "param to train all layers if True",
+  "minn_train_all_base_layers": false,
+
+  "//" :  "fine tunning coef for unfreeze layers",
+  "minn_f_tune_coef" : 1,
+
+  "//" :  "dimensionality of the output space in Dense layer of imgs part",
+  "minn_imgs_dense_units_1" : 512,
+  
+  "//" :  "function activation in Dense layer of imgs part",
+  "minn_imgs_dense_activation_1" : "relu",
+
+
+
+  "//" :  "---------- Tabular part of model ---------- ",
+  "minn_tab_input_shape" : null,
+
+  "//" :  "dimensionality of the output space in Dense layer of tabular part",
+  "minn_tab_dense_units_1" : 1024,
+  "minn_tab_dense_units_2" : 512,
+
+  "//" :  "function activation in Dense layer",
+  "minn_tab_dense_activation_1" : "relu",
+  "minn_tab_dense_activation_2" : "relu",
+
+
+  "//" :  "---------- NLP part of model ----------",
+  "minn_nlp_name_1" : "seq_description",
+  
+  "//" :  "dimensionality of the output space and return seq in LSTM layer 1",
+  "minn_lstm_units_1": 1024,
+  "minn_return_seq_1": true,
+
+  "//" :  "dimensionality of the output space in LSTM layer 2",
+  "minn_lstm_units_2": 512,
+
+  "//" :  "dimensionality of the output space in Dense layer",
+  "minn_nlp_dense_units_1" : 256,
+
+  "//" :  "function activation in Dense layer",
+  "minn_nlp_dense_activation" : "relu",
+
+
+  "//" :  "---------- Head of IMG & TAB & NLP models ---------- ",
+  "minn_head_dense_units_1" : 256,
+  "minn_head_dense_activation_1" : "relu",
+  
+  "minn_output_activation" : "linear",
+
+
+  "//" :  "Settings for define optimizer of Multi Input NN in different steps",
+  "minn_lr_step_1" : 0.01,
+  "minn_lr_step_2" : 0.005,
+  "minn_lr_step_3" : 0.002,
+  "minn_lr_step_4" : 0.0002,
+  "minn_lr_step_5" : 0.0001,
+  "minn_lr_step_6" : 0.0000005,
+
+
+  "//" :  "Settings for compile MultiInput Model",
+  "minn_loss_compile" : "MAPE",
+  "minn_metric_compile" : "MAPE",
+
+
+  "//" :  "Settings for fit Multi Input Model",
+  "minn_batch_size" : 30,
+  "minn_epochs" : 100,
+  "minn_verbose" : 1,
+
+  
+  "//" :  "Settings for save best Simple Sequential Model after train",
+  "minn_best_weights_name_st_1" : "best_weights_minn_st_1.hdf5",
+  "minn_best_model_name_st_1" : "best_model_minn_st_1.hdf5",
+  "minn_best_weights_name_st_2" : "best_weights_minn_st_2.hdf5",
+  "minn_best_model_name_st_2" : "best_model_minn_st_2.hdf5",
+  "minn_best_weights_name_st_3" : "best_weights_minn_st_3.hdf5",
+  "minn_best_model_name_st_3" : "best_model_minn_st_3.hdf5",
+  "minn_best_weights_name_st_4" : "best_weights_minn_st_4.hdf5",
+  "minn_best_model_name_st_4" : "best_model_minn_st_4.hdf5",
+  "minn_best_weights_name_st_5" : "best_weights_minn_st_5.hdf5",
+  "minn_best_model_name_st_5" : "best_model_minn_st_5.hdf5",
+  "minn_best_weights_name_st_6" : "best_weights_minn_st_6.hdf5",
+  "minn_best_model_name_st_6" : "best_model_minn_st_6.hdf5",
 
 
 
