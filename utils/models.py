@@ -83,6 +83,8 @@ class SimpleSeqNN(Model):
         super().__init__()
         self.is_show_summary = config.is_show_summary
         self.config = config
+
+        # ---------- TABULAR ----------
         
         self.inputs = x = Input(shape=(self.config.snn_input_shape,))
         x = L.Dense(self.config.snn_dense_units_1, 
@@ -124,43 +126,50 @@ class MultiSeqNN(Model):
         self.is_show_summary = config.is_show_summary
         self.config = config
         
-        self.inputs_1 = x1 = Input(shape=(self.config.MAX_SEQUENCE_LENGTH,), 
-                                          name=config.mnn_nlp_name_1)
+        # ---------- NLP part ----------
+
+        self.nlp_inputs = x1 = Input(shape=(self.config.MAX_SEQUENCE_LENGTH,), 
+                                            name=config.msnn_nlp_name_1)
         x1 = L.Embedding(len(tokenize.word_index)+1, 
-                            config.MAX_SEQUENCE_LENGTH,)(x1)
+                         config.MAX_SEQUENCE_LENGTH,)(x1)
         x1 = L.BatchNormalization()(x1)
-        x1 = L.LSTM(config.mnn_lstm_units_1, 
-                       return_sequences=config.mnn_return_seq_1)(x1)
+        x1 = L.LSTM(config.msnn_lstm_units_1, 
+                       return_sequences=config.msnn_return_seq_1)(x1)
         x1 = L.Dropout(0.25)(x1)
-        x1 = L.LSTM(config.mnn_lstm_units_2)(x1)
+        x1 = L.LSTM(config.msnn_lstm_units_2)(x1)
         x1 = L.Dropout(0.5)(x1)
-        x1 = L.Dense(self.config.mnn_nlp_dense_units_1, 
-                     activation=self.config.mnn_nlp_dense_activation,
+        x1 = L.Dense(self.config.msnn_nlp_dense_units_1, 
+                     activation=self.config.msnn_nlp_dense_activation,
                      )(x1)
         model_nlp = L.Dropout(0.5)(x1)
 
+        # ---------- TABULAR part ----------
 
-        self.inputs_2 = x2 = Input(shape=(self.config.mnn_input_shape,))
-        x2 = L.Dense(self.config.mnn_mlp_dense_units_1, 
-                     activation=self.config.mnn_mlp_dense_activation_1,
+        self.tab_inputs = x2 = Input(shape=(self.config.msnn_input_shape,))
+        x2 = L.Dense(self.config.msnn_tab_dense_units_1, 
+                     activation=self.config.msnn_tab_dense_activation_1,
                      )(x2)
         x2 = L.BatchNormalization()(x2)
         x2 = L.Dropout(0.25)(x2)
-        x2 = L.Dense(self.config.mnn_mlp_dense_units_2, 
-                    activation=self.config.mnn_mlp_dense_activation_2,
+        x2 = L.Dense(self.config.msnn_tab_dense_units_2, 
+                    activation=self.config.msnn_tab_dense_activation_2,
                     )(x2)
-        model_mlp = L.Dropout(0.5)(x2)
+        model_tab = L.Dropout(0.5)(x2)
 
-        combinedInput = L.concatenate([model_nlp, model_mlp]) #.output, .output
+        # combining the outputs of two neural networks
+        combinedInput = L.concatenate([model_nlp, model_tab]) 
         
+
+        # ---------- HEAD of models ----------
+
         # being our regression head
-        self.head = L.Dense(config.mnn_head_dense_units_1, 
-                            activation=config.mnn_head_dense_activation_1
+        self.head = L.Dense(config.msnn_head_dense_units_1, 
+                            activation=config.msnn_head_dense_activation_1
                             )(combinedInput)
         #self.head = L.BatchNormalization()(self.head)
         self.head = L.Dropout(0.5)(self.head)
         self.head = L.Dense(1, 
-                            activation=config.mnn_output_activation
+                            activation=config.msnn_output_activation
                             )(self.head)
         
         
@@ -169,7 +178,7 @@ class MultiSeqNN(Model):
         Model formation method
         """
         model = Model(
-            inputs=[self.inputs_1, self.inputs_2],
+            inputs=[self.nlp_inputs, self.tab_inputs],
             outputs=self.head,
             name="model_MultiSeqNN"
         )
@@ -177,3 +186,98 @@ class MultiSeqNN(Model):
             model.summary()
         return model
     
+
+
+
+
+class MultiInputNN(Model):
+
+    def __init__(self, config: dict, tokenize):
+        super().__init__()
+        self.is_show_summary = config.is_show_summary
+        self.config = config
+
+        # ---------- IMAGES part ----------
+        self.base_img_model = tf.keras.applications.efficientnet.EfficientNetB3(
+            weights=config.minn_weights,
+            include_top=config.minn_include_top,
+            input_shape = (config.img_height, config.img_weight, config.img_channels)
+            )
+        
+        self.base_img_model.trainable = config.minn_base_model_trainable
+
+        # Сhoose layers which weights will train and freeze  
+        if config.minn_train_all_base_layers==False:
+            # Fine-tune from this layer onwards
+            fine_tune_at = int(len(self.base_img_model.layers)//config.minn_f_tune_coef)
+            # Freeze all the layers before the `fine_tune_at` layer
+            for layer in self.base_img_model.layers[:fine_tune_at]:
+                layer.trainable = False
+        
+        x0 = L.GlobalAveragePooling2D()(self.base_img_model.output)
+        x0 = L.Dense(config.minn_imgs_dense_units_1, 
+                     activation=config.minn_imgs_dense_activation_1)(x0)
+        model_img = L.Dropout(0.5)(x0)
+        
+
+        # ---------- TABULAR part ----------
+        self.tab_input = x1 = Input(shape=(self.config.minn_tab_input_shape,))
+        x1 = L.Dense(self.config.minn_tab_dense_units_1, 
+                     activation=self.config.minn_tab_dense_activation_1,
+                     )(x1)
+        #x1 = L.BatchNormalization()(x1)
+        x1 = L.Dropout(0.25)(x1)
+        x1 = L.Dense(self.config.minn_tab_dense_units_2, 
+                    activation=self.config.minn_tab_dense_activation_2,
+                    )(x1)
+        model_tab = L.Dropout(0.5)(x1)
+
+        
+        # ---------- NLP part ----------
+        self.nlp_input = x2 = Input(shape=(self.config.MAX_SEQUENCE_LENGTH,), 
+                                           name=config.minn_nlp_name_1)
+        x2 = L.Embedding(len(tokenize.word_index)+1, 
+                             config.MAX_SEQUENCE_LENGTH,)(x2)
+        #x2 = L.BatchNormalization()(x2)
+        x2 = L.LSTM(config.minn_lstm_units_1, 
+                       return_sequences=config.minn_return_seq_1)(x2)
+        x2 = L.Dropout(0.25)(x2)
+        x2 = L.LSTM(config.minn_lstm_units_2)(x2)
+        x2 = L.Dropout(0.5)(x2)
+        x2 = L.Dense(self.config.minn_nlp_dense_units_1, 
+                     activation=self.config.minn_nlp_dense_activation,
+                     )(x2)
+        model_nlp = L.Dropout(0.5)(x2)
+
+
+        # combining the outputs of three neural networks
+        combinedInput = L.concatenate([model_img, model_tab, model_nlp])
+
+
+        # ---------- HEAD of models ----------
+
+        # being our regression head
+        self.head = L.Dense(config.minn_head_dense_units_1, 
+                            activation=config.minn_head_dense_activation_1
+                            )(combinedInput)
+        #self.head = L.BatchNormalization()(self.head)
+        self.head = L.Dropout(0.5)(self.head)
+        self.head = L.Dense(1, 
+                            activation=config.minn_output_activation
+                            )(self.head)
+        
+        
+    def build_model(self):
+        """
+        Model formation method
+        """
+        model = Model(
+            inputs=[self.base_img_model.input, 
+                    self.tab_input, 
+                    self.nlp_input],
+            outputs=self.head,
+            name="model_MultiInputNN"
+        )
+        if self.is_show_summary:
+            model.summary()
+        return model
