@@ -303,10 +303,10 @@
   "//" :  "Settings for define optimizer of Multi Input NN in different steps",
   "minn_lr_step_1" : 0.01,
   "minn_lr_step_2" : 0.005,
-  "minn_lr_step_3" : 0.002,
-  "minn_lr_step_4" : 0.0002,
+  "minn_lr_step_3" : 0.001,
+  "minn_lr_step_4" : 0.0005,
   "minn_lr_step_5" : 0.0001,
-  "minn_lr_step_6" : 0.0000005,
+  "minn_lr_step_6" : 0.00005,
 
 
   "//" :  "Settings for compile MultiInput Model",
