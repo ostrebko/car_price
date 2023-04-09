@@ -307,6 +307,7 @@
   "minn_lr_step_4" : 0.0005,
   "minn_lr_step_5" : 0.0001,
   "minn_lr_step_6" : 0.00005,
+  "minn_lr_step_7" : 0.00001,
 
 
   "//" :  "Settings for compile MultiInput Model",
