@@ -24,7 +24,7 @@
   "ZIP_FILE" : "sf-dst-car-price-prediction-part2.zip",
 
   "//" :  "choose SEED value",
-  "RANDOM_SEED" : 32,
+  "RANDOM_SEED" : 42,
 
   "//" :  "LR that will change in functions",
   "LR" : 0.01,
