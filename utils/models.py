@@ -137,7 +137,7 @@ class MultiSeqNN(Model):
                        return_sequences=config.msnn_return_seq_1)(x1)
         x1 = L.Dropout(0.25)(x1)
         x1 = L.LSTM(config.msnn_lstm_units_2)(x1)
-        x1 = L.Dropout(0.25)(x1) #new  0.5->0.25
+        x1 = L.Dropout(0.5)(x1)
         x1 = L.Dense(self.config.msnn_nlp_dense_units_1, 
                      activation=self.config.msnn_nlp_dense_activation,
                      )(x1)
