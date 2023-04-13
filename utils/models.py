@@ -135,13 +135,12 @@ class MultiSeqNN(Model):
         x1 = L.BatchNormalization()(x1)
         x1 = L.LSTM(config.msnn_lstm_units_1, 
                        return_sequences=config.msnn_return_seq_1)(x1)
-        x1 = L.Dropout(0.25)(x1)
+        x1 = L.Dropout(0.5)(x1) #new 0.25->0.5
         x1 = L.LSTM(config.msnn_lstm_units_2)(x1)
         x1 = L.Dropout(0.5)(x1)
         x1 = L.Dense(self.config.msnn_nlp_dense_units_1, 
                      activation=self.config.msnn_nlp_dense_activation,
                      )(x1)
-        x1 = L.BatchNormalization()(x1) #new
         model_nlp = L.Dropout(0.5)(x1)
 
         # ---------- TABULAR part ----------
@@ -151,11 +150,10 @@ class MultiSeqNN(Model):
                      activation=self.config.msnn_tab_dense_activation_1,
                      )(x2)
         x2 = L.BatchNormalization()(x2)
-        x2 = L.Dropout(0.25)(x2)
+        x2 = L.Dropout(0.5)(x2) #new  0.25->0.5
         x2 = L.Dense(self.config.msnn_tab_dense_units_2, 
                     activation=self.config.msnn_tab_dense_activation_2,
                     )(x2)
-        x2 = L.BatchNormalization()(x2) #new
         model_tab = L.Dropout(0.5)(x2)
 
         # combining the outputs of two neural networks
