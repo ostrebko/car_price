@@ -166,7 +166,7 @@ class MultiSeqNN(Model):
         self.head = L.Dense(config.msnn_head_dense_units_1, 
                             activation=config.msnn_head_dense_activation_1
                             )(combinedInput)
-        #self.head = L.BatchNormalization()(self.head)
+        self.head = L.BatchNormalization()(self.head)
         self.head = L.Dropout(0.5)(self.head)
         self.head = L.Dense(1, 
                             activation=config.msnn_output_activation
@@ -260,7 +260,7 @@ class MultiInputNN(Model):
         self.head = L.Dense(config.minn_head_dense_units_1, 
                             activation=config.minn_head_dense_activation_1
                             )(combinedInput)
-        #self.head = L.BatchNormalization()(self.head)
+        self.head = L.BatchNormalization()(self.head)
         self.head = L.Dropout(0.5)(self.head)
         self.head = L.Dense(1, 
                             activation=config.minn_output_activation
